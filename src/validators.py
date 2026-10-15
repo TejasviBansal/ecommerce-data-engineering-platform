@@ -49,3 +49,10 @@ def validate_referential_integrity(child_series, parent_series):
 
     if invalid_child_ids:
         raise ValueError(f"Invalid foreign key reference found: {invalid_child_ids}")
+
+def validate_whole_numbers(series, column):
+    no_null_value = series.dropna()
+    fractional_values = (no_null_value % 1) != 0
+
+    if any(fractional_values):
+        raise ValueError(f"Fractional values present in {column}: {no_null_value[fractional_values]}") 

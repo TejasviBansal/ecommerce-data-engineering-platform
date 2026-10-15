@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
-from .validators import validate_schema, validate_required_fields, validate_unique_keys, report_duplicate_rows, validate_allowed_values, validate_numeric_range, validate_referential_integrity
-from .schemas import EXPECTED_SCHEMAS, REQUIRED_COLUMNS, UNIQUE_KEYS, ALLOWED_VALUES, NUMERIC_RANGE, REFERENTIAL_INTEGRITY
+from .validators import validate_schema, validate_required_fields, validate_unique_keys, report_duplicate_rows, validate_allowed_values, validate_numeric_range, validate_referential_integrity, validate_whole_numbers
+from .schemas import EXPECTED_SCHEMAS, REQUIRED_COLUMNS, UNIQUE_KEYS, ALLOWED_VALUES, NUMERIC_RANGE, REFERENTIAL_INTEGRITY, WHOLE_NUMBER
 from .data_loader import load_datasets
 
 root = Path(__file__).parents[1]
@@ -169,6 +169,23 @@ def main():
             else:
                 print(f"No referential integrity for: {filename}")
                 record_validation_result(validation_results, filename, "referential_integrity", "NOT_CONFIGURED", f"No referential integrity rules defined for {filename}")
+
+            # Whole number validation
+
+            if filename in WHOLE_NUMBER:
+                whole_no_cols = WHOLE_NUMBER[filename]
+                for column in whole_no_cols:
+                    try:
+                        validate_whole_numbers(df[column], column)
+                        print(f"Whole number validation passed: {column}")
+                        record_validation_result(validation_results, filename, "whole_number", "PASSED", "No fractional value present")                        
+
+                    except ValueError as error:
+                        print(f"Whole number validation failed: {column} - {error}")
+                        record_validation_result(validation_results, filename, "whole_number", "FAILED", f"Fractional values are present in {column} - {error}")
+            else:
+                print(f"No whole number for: {filename}")
+                record_validation_result(validation_results, filename, "whole_number", "NOT_CONFIGURED", f"No whole number defined for {filename}")
 
 
     passed_count = len([i for i in validation_results if i['status'] == 'PASSED'])

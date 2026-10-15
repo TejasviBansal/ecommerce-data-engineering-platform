@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.validators import validate_numeric_range, validate_schema, validate_allowed_values, validate_referential_integrity, validate_required_fields, validate_unique_keys, report_duplicate_rows
+from src.validators import validate_numeric_range, validate_schema, validate_allowed_values, validate_referential_integrity, validate_required_fields, validate_unique_keys, report_duplicate_rows, validate_whole_numbers
 
 incorrect_data = pd.Series([-50, 10, 300, 60])
 non_negative_data = pd.Series([10,20,30,40,50, 100, 300])
@@ -131,3 +131,16 @@ missing_req_cols = ['id', 'Name']
 def test_missing_required_cols():
     with pytest.raises(ValueError):
         validate_required_fields(dataframe3, missing_req_cols)
+
+def test_whole_numbers():
+    series = pd.Series([10.0, 20.0, 30.0, 40.0])
+    validate_whole_numbers(series, "product_count")
+
+def test_whole_numbers_with_fractional_values():
+    series = pd.Series([10.5, 20.75, 30.0, 40.0])
+    with pytest.raises(ValueError):
+        validate_whole_numbers(series, "product_count")
+
+def test_whole_numbers_with_missing_values():
+    series = pd.Series([10.0, 20.0, 30.0, None])
+    validate_whole_numbers(series, "product_count")

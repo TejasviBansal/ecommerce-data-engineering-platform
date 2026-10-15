@@ -260,3 +260,13 @@ REFERENTIAL_INTEGRITY = {
         "parent_column": "order_id"
     }
 }
+
+PRODUCTS_WHOLE_NUMBER_COLUMNS=[
+    "product_name_lenght",
+    "product_description_lenght",
+    "product_photos_qty",
+]
+
+WHOLE_NUMBER = {
+    "olist_products_dataset.csv": PRODUCTS_WHOLE_NUMBER_COLUMNS
+}
